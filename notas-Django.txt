@@ -1,0 +1,262 @@
+USAR ENTORNO VIRTUAL COPIADO
+----------------------------
+si se copia y pega en cualquier ruta, va a haber un problema porque al haberse creado por primera vez, tiene almacenada una ruta (cuando no es una de sistema). Se puede verificar cualquier archivo dentro de /bin como por ejemplo el de pip. 
+
+En la parte superior encontraremos algo como esto:
+#!/home/juliorhode/virtualenv/bin/python3
+
+Es la ruta que tiene registrada, asi que tendriamos que copiarla en una ruta igual... para evitar esto, deberiamos crear el entorno virtual en una ruta de sistema
+
+
+Crear un entorno virtual
+------------------------
+Para crear un entorno virtual, nos ubicamos en la ruta que queramos que se encuentre, luego procederemos a crearlo:
+python3 -m venv <nombre_entorno>
+
+Ejemplo:
+python3 -m venv myvenv
+
+Errores:
+--------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+NOTA: En algunas versiones de Debian/Ubuntu, puede que obtengas el siguiente error:
+
+The virtual environment was not created successfully because ensurepip is not available.  En sistemas Debian/Ubuntu, tendrás que instalar el paquete python3-venv usando el siguiente comando.
+   apt-get install python3-venv
+Puede que tengas que usar sudo con este comando.  Después de instalar el paquete python3-venv, vuelve a crear tu entorno virtual.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+En este caso, sigue las instrucciones anteriores e instala el paquete python3-venv:
+
+$ sudo apt install python3-venv
+**************************************************************************************************************************************************************
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+NOTA: En algunas versiones de Debian/Ubuntu inicializar el entorno virtual de esta manera da el siguiente error:
+
+Error: Command '['/home/eddie/Slask/tmp/venv/bin/python3', '-Im', 'ensurepip', '--upgrade', '--default-pip']' returned non-zero exit status 1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Para evitar esto, utiliza directamente el comando virtualenv.
+
+$ sudo apt-get install python-virtualenv
+$ virtualenv --python=python3.6 myvenv
+**************************************************************************************************************************************************************
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+NOTA: Si obtienes un error como
+
+E: Unable to locate package python3-venv
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+entonces ejecuta:
+
+sudo apt install python3.6-venv
+**************************************************************************************************************************************************************
+
+
+Iniciar entorno virtual
+-----------------------
+En donde se encuentre la carpeta del entorno virtual creado, ingresamos el siguiente comando:
+source myvenv/bin/activate
+
+NOTA: a veces source podría no estar disponible. En ese caso trata hacerlo de esta forma:
+
+$ . myvenv/bin/activate
+
+
+Instalar PIP
+---------------
+dentro de tu entorno virtual, vamos a ejecutar el siguiente comando para garantizar que tengamos la ultima version de pip instalada
+(myvenv) ~$ python -m pip install --upgrade pip
+
+
+Instalar paquetes con fichero de requisitos (requirements)
+----------------------------------------------------------
+Un fichero de requisitos (requirements) tiene una lista de dependencias que se deben instalar mediante pip install
+
+Primero crea un archivo requirements.txt dentro de tu directorio. Se verá algo asi:
+
+nombre_directorio
+└───requirements.txt
+
+Dentro del archivo requirements.txt colocaremos lo siguiente:
+
+Django~=<version>
+
+Guardamos la informacion y luego ejecutamos el siguiente comando para su instalacion:
+
+pip install -r requirements.txt
+
+Nota: si se obtiene algun error al llamar pip, ejecutaremos el siguiente comando:
+
+python -m pip install -U --force-reinstall pip
+
+
+PythonAnywhere
+--------------
+PythonAnywhere es un servicio para ejecutar código Python en servidores "en la nube".
+
+Crearemos nuestra cuenta, y luego nos vamos a API token y creamos nuestro token.
+
+
+Crear Proyecto Django
+---------------------
+Con el entorno virtual activado, ejecutamos:
+django-admin startproject <nombre_proyeto> .
+
+El punto '.' luego del nombre del proyecto, es para indicar que es el directorio actual
+
+La estructura quedara algo asi:
+
+prueba/
+├── manage.py
+└── mysite
+    ├── asgi.py
+    ├── __init__.py
+    ├── settings.py
+    ├── urls.py
+    └── wsgi.py
+
+manage.py es un script que ayuda con la administración del sitio.
+settings.py contiene la configuración de tu sitio web.
+urls.py contiene una lista de los patrones utilizados por urlresolver
+
+Configurar la zona horaria
+---------------------------
+Podemos encontrar los Time Zone (TZ) en https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+TIME_ZONE = 'America/Caracas'
+
+Cambiar codigo de idioma
+------------------------
+http://www.i18nguy.com/unicode/language-identifiers.html
+
+LANGUAGE_CODE = 'es-VE'
+LANGUAGE_CODE = 'es-es'
+
+Añadir ruta para archivos estaticos
+-----------------------------------
+STATIC_ROOT = Path.joinpath(BASE_DIR, 'static')
+
+Permitir Acceso al sitio
+------------------------
+ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com']
+
+ Una vez despleguemos nuestra aplicación, hay que darle permiso al nombre
+ de host en PythonAnywhere
+
+Crear base de datos
+-------------------
+(myvenv) ~$ python manage.py migrate
+
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying sessions.0001_initial... OK
+
+Crear superusuario
+------------------
+myvenv) ~$ python manage.py createsuperuser
+
+Nombre de usuario (leave blank to use 'juliorhode'):
+Dirección de correo electrónico: juliorhode@gmail.com
+Password:
+Password (again):
+Superuser created successfully.
+
+
+Iniciar servidor
+----------------
+(myvenv) ~$ python manage.py runserver
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+CREACION DE UN BLOG
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+1) Crearemos nuestra app Blog
+(myvenv) ~$ python manage.py startapp blog
+
+Ahora nuestra estructura quedaria asi:
+../prueba/
+├── blog
+|    ├── admin.py
+|    ├── apps.py
+|    ├── __init__.py
+|    ├── migrations
+|    |    └── __init__.py
+|    ├── models.py
+|    ├── tests.py
+|    └── views.py
+├── db.sqlite3
+├── manage.py
+├── mysite
+|    ├── asgi.py
+|    ├── __init__.py
+|    ├── __pycache__
+|    |    ├── __init__.cpython-36.pyc
+|    |    ├── settings.cpython-36.pyc
+|    |    ├── urls.cpython-36.pyc
+|    |    └── wsgi.cpython-36.pyc
+|    ├── settings.py
+|    ├── urls.py
+|    └── wsgi.py
+└── notas-Django.txt
+
+2) Creada la app, se le debe indicar a django que debe utilizarla. Esto se hace en el fichero mysite/settings.py
+Nos dirijimos a INSTALLED_APPS y registramos nuestra app: 'blog'
+
+3) Crearemos el modelo para los datos de entrada del blog. Para ello nos vamos a blob/models.py
+
+4) luego de crear el modelo, tenemos que agrearlo a la base de datos. Primero se le indica a django que realizamos
+cambios de la siguiente forma:
+
+(myvenv) ~$ python manage.py makemigrations blog
+Migrations for 'blog':
+  blog/migrations/0001_initial.py
+    - Create model Post
+
+Ahora ya django preparo un archivo de migracion. Ahora debemos aplicar los cambios de la siguiente forma:
+(myvenv) ~$ python manage.py migrate blog
+Operations to perform:
+  Apply all migrations: blog
+Running migrations:
+  Applying blog.0001_initial... OK
+
+5) Para agregar, editar y borrar los posts que hemos modelado, usaremos el administrador (admin) de Django. Para ello
+nos vamos al fichero blog/admin.py
+
+
+************************************************************************************************************************
+Desplegar la aplicacion en PythonAnywhere.
+************************************************************************************************************************
+1) inicializamos el repositorio de git
+(myvenv) ~$ git init
+
+Inicializado repositorio Git vacío en /home/juliorhode/Escritorio/prueba/.git/
+
+2) configuramos nuestro usuario y correo
+(myvenv) ~$ git config --global user.name 'Julio Rhode'
+(myvenv) ~$ git config --global user.email 'juliorhode@gmail.com'
+
+
+
